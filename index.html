@@ -1,0 +1,152 @@
+<html>
+    <head>
+        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <title>JSLearn</title>
+        <style>
+            body { background: rgb(228, 228, 228); }
+            #main { width: 80%; margin: 0 auto; }
+            #shell { 
+                height: 300px; 
+                margin-top: 50px; 
+                background: #fff; 
+                resize: none;
+                overflow: auto;
+                padding-bottom: 30px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="main">
+            <div class="form-group">
+                <!--
+                <textarea id="shell" class="form-control" readonly></textarea>
+                -->
+                <div id="shell" class="form-control"></div>
+            </div>
+            <div class="form-group">
+                <input type="text" id="command" class="form-control" disabled />
+            </div>
+            <div class="form-group">
+                <input type="button" id="left2right" class="btn btn-primary" value="Left to right" />
+                <input type="button" id="right2left" class="btn btn-primary" value="Right to left" />
+            </div>            
+            <div class="form-group">
+              <textarea id="words" class="form-control"></textarea>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+        <script>
+            var shell = document.getElementById("shell")
+            var cmd = document.getElementById("command")
+            var left2right = document.getElementById("left2right")
+            var right2left = document.getElementById("right2left")
+            var words = document.getElementById("words")
+            var hist = []
+            var i
+            var game = {}
+            var currentKey
+
+            left2right.addEventListener("click", function() {
+                buildGame(false)
+                nextKey()
+                cmd.disabled = false
+            });
+
+            right2left.addEventListener("click", function() {
+                buildGame(true)
+                nextKey()
+                cmd.disabled = false
+            });
+
+            function nextKey() {
+                currentKey = getRandomKey()
+                if (currentKey == undefined) {
+                    log("Congratulations !")
+                } else {
+                    log("<b>" + currentKey + "</b>")
+                }
+                cmd.focus()
+            }
+
+            function getRandomKey() {
+                let keys = Object.keys(game)
+                return keys[ keys.length * Math.random() << 0];
+            }
+
+            function buildGame(invert = false) {
+                game = {}
+                let lines = words.value.split("\n")
+                for (let key in lines) {
+                    parts = lines[key].split(':')
+                    left = parts[0].trim()
+                    right = parts[1].trim()
+                    if (invert == false) {
+                        game[left] = right
+                    } else {
+                        game[right] = left
+                    }
+                }
+                log(Object.keys(game).length + " keys loaded")
+                // console.log(game)
+            }
+            
+            document.addEventListener('keydown', keyHandler);
+            function keyHandler(e) {
+                //console.log(e)
+                if (e.key == "ArrowUp") {
+                    if (i > 0) { 
+                        i-- 
+                    }
+                    if (hist[i] != undefined) {
+                        cmd.value = hist[i]
+                    }
+                    focusAtEnd(cmd)
+                }
+                if (e.key == "ArrowDown") {
+                    if (i < (hist.length - 1)) {
+                        i++
+                    }
+                    if (hist[i] != undefined) {
+                        cmd.value = hist[i]
+                    }
+                    focusAtEnd(cmd)
+                }
+                if (e.key == "Enter") {
+                    log(cmd.value)
+                    i = hist.push(cmd.value)
+                    treatResponse(cmd.value)
+                    cmd.value = ""
+                }
+            }
+
+            function treatResponse(text) {
+                if (text.toUpperCase() == game[currentKey].toUpperCase()) { // Successful answer
+                    delete game[currentKey]
+                    nextKey()
+                } else if(text == "?") {
+                    log("<i>" + game[currentKey] + "</i>")
+                } else {
+                    log("<b>" + currentKey + "</b>")
+                }
+            }
+
+            function focusAtEnd(el) {
+                window.setTimeout(function() {
+                    el.focus();
+                    el.setSelectionRange(el.value.length, el.value.length);
+                }, 0);
+            }
+
+            function log(text) {
+                shell.innerHTML += text + "<br />"
+                shell.scrollTop = shell.scrollHeight;
+                /*
+                shell.value += "\n" + text 
+                shell.scrollTop = shell.scrollHeight;
+                */
+            }
+
+        </script>
+    </body>
+</html>
