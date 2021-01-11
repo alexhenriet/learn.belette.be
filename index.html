@@ -51,12 +51,14 @@
                 buildGame(false)
                 nextKey()
                 cmd.disabled = false
+                cmd.focus()
             });
 
             right2left.addEventListener("click", function() {
                 buildGame(true)
                 nextKey()
                 cmd.disabled = false
+                cmd.focus()
             });
 
             function nextKey() {
@@ -66,7 +68,6 @@
                 } else {
                     log("<b>" + currentKey + "</b>")
                 }
-                cmd.focus()
             }
 
             function getRandomKey() {
