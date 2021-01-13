@@ -43,7 +43,7 @@
             var right2left = document.getElementById("right2left")
             var words = document.getElementById("words")
             var hist = []
-            var i
+            var i, j = 0, k
             var game = {}
             var currentKey
 
@@ -66,7 +66,8 @@
                 if (currentKey == undefined) {
                     log("Congratulations !")
                 } else {
-                    log("<b>" + currentKey + "</b>")
+                    j++
+                    log(j + "/" + k + ' - <b>' + currentKey + "</b>")
                 }
             }
 
@@ -88,8 +89,11 @@
                         game[right] = left
                     }
                 }
-                log(Object.keys(game).length + " keys loaded")
-                // console.log(game)
+                hist = []
+                j = 0
+                k = Object.keys(game).length
+                shell.innerHTML = ""
+                log(k + " keys loaded")
             }
             
             document.addEventListener('keydown', keyHandler);
@@ -122,13 +126,13 @@
             }
 
             function treatResponse(text) {
-                if (text.toUpperCase() == game[currentKey].toUpperCase()) { // Successful answer
+                if ((text.toUpperCase() == game[currentKey].toUpperCase()) || text == "!!") { // Successful answer
                     delete game[currentKey]
                     nextKey()
                 } else if(text == "?") {
                     log("<i>" + game[currentKey] + "</i>")
                 } else {
-                    log("<b>" + currentKey + "</b>")
+                    log(j + "/" + k + " - <b>" + currentKey + "</b>")
                 }
             }
 
